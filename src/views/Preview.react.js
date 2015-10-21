@@ -13,16 +13,25 @@ class Preview extends Component {
     this.customHeader = [];
     this.row1 = [];
     this.row2 = [];
+    this.checkboxSelected=true;
     this.includeHeader = true;
     this.noHeader = false;
+    this.datFormat="";
+    this.noFormat="";
+    this.deliFormat="";
     this.actions = bindActionCreators(PreviewActions, dispatch);
   }
 
   componentWillMount() {
-    this.actions.previewFile();
+    //this.actions.previewFile();
+    this.dateFormat(this,'MM/dd/yyyy');
+  }
+  componentDidMount(){
+    
   }
 
   changeColumn(e) {
+    console.log("column="+e.target.checked);
     if(e.target.checked == false) {
       this.noHeader = true;
       this.includeHeader = false;
@@ -38,8 +47,9 @@ class Preview extends Component {
       this.setState({'hh':'kkk'});
     }
   }
-
-  changeDateFormat(list, format) {
+  changeDateFormat(list,format) {
+    this.datFormat=format;
+    console.log("list="+list);
     if (list) {
       for (var i = 0; i < list.length; i++) {
         if (isNaN(list[i])) {
@@ -96,16 +106,17 @@ class Preview extends Component {
       }
     }
   }
+ 
   dateFormat(e){
-    console.log(this.props.header);
     this.headers = this.splitter(this.props.attributesectionsearch.headers, this.delimiter);
     let rowOne = this.splitter(this.props.attributesectionsearch.rowOne, this.delimiter);
     let rowTwo = this.splitter(this.props.attributesectionsearch.rowTwo, this.delimiter);
-    this.row1 = this.changeDateFormat(rowOne, e.target.value);
-    this.row2 = this.changeDateFormat(rowTwo, e.target.value);
+    this.row1 = this.changeDateFormat(rowOne);
+    this.row2 = this.changeDateFormat(rowTwo);
     this.setState({'hh':'kkk'});
   }
   numberFormat(e){
+    this.noFormat=e.target.value;
     this.headers = this.splitter(this.props.attributesectionsearch.headers, this.delimiter);
     let rowOne = this.splitter(this.props.attributesectionsearch.rowOne, this.delimiter);
     let rowTwo = this.splitter(this.props.attributesectionsearch.rowTwo, this.delimiter);
@@ -114,7 +125,7 @@ class Preview extends Component {
     this.setState({'hh':'kkk'});
   }
   delimiterFormat(e){
-    this.delimiter = e.target.value;
+    this.deliFormat = e.target.value;
     this.headers = this.splitter(this.props.attributesectionsearch.headers, this.delimiter);
     this.row1 = this.splitter(this.props.attributesectionsearch.rowOne, this.delimiter);
     this.row2 = this.splitter(this.props.attributesectionsearch.rowTwo, this.delimiter);
@@ -165,6 +176,28 @@ class Preview extends Component {
     }
     return list;
   }
+  thirdStep(e){
+   console.log("dateformat="+this.datFormat+" noFormat="+this.noFormat+" delimeterFormat="+this.deliFormat);
+    if(this.datFormat==""||this.noFormat==""||this.deliFormat==""){
+        /*no selected*/
+    }
+    else{
+      console.log("else");
+     /*redirect to mapping*/
+      
+      
+    }
+  }
+
+  firstStep(){
+
+  }
+
+  reloadStep(e){
+    
+    console.log("reload="+e.datePattern+" "+e.numberPattern);
+  }
+
   render() {
     console.log(this.headers);
     console.log(this.row1);
@@ -184,6 +217,7 @@ class Preview extends Component {
     let row2 = this.row2.map(function(i) {
       return <td>{i}</td>;
     });
+    var selectedValue="";
     return (
       <div>
         <div>
@@ -197,13 +231,13 @@ class Preview extends Component {
                   <div className="form-group">
                     <label className="col-sm-4 control-label">First line include header</label>
                     <div className="col-sm-8">
-                      <input type="checkbox" onChange={this.changeColumn.bind(this)}/>
+                      <input type="checkbox"  onChange={this.changeColumn.bind(this)}/>
                     </div>
                   </div>
                   <div className="form-group">
                     <label className="col-sm-4 control-label">Date Format </label>
                     <div className="col-sm-8">
-                      <select name="datePattern" className="form-control" onChange={this.dateFormat.bind(this)} required>
+                      <select name="datePattern" id="datePattern" className="form-control" onChange={this.dateFormat.bind(this)} required>
                         <option value=''>select format</option>
                         <option value='dd-MM-yyyy'>dd-MM-yyyy</option>
                         <option value='MM/dd/yyyy'>MM/dd/yyyy</option>
@@ -272,11 +306,14 @@ class Preview extends Component {
                 </tbody>
               </table>
               <div className="btn-set button-container pull-right">
-                <button className="btn btn-primary"  ng-click="firstStep()">Back</button>
-                <Link to="/mapping" className="btn btn-wizard">
-                  <button className="btn btn-primary"  ng-show="!stopStep" ng-click="thirdStep(fileStyle, pattern)">Next</button>
-                </Link>
-                <button className="btn btn-primary"  ng-show="stopStep" ng-click="reloadStep()">Upload</button>
+
+                <button className="btn btn-primary" onClick={this.firstStep()}>Back</button>
+               
+                  <button className="btn btn-primary" onClick={this.thirdStep.bind(this)}>Next</button>
+                
+                
+                <button className="btn btn-primary"   onClick={this.reloadStep.bind(this)}>Uploadd</button>
+                
               </div>
             </div>
           </div>

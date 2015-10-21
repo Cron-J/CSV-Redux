@@ -6,13 +6,40 @@ import * as PreviewActions from 'actions/previewPage/PreviewActions';
 import { connect } from 'react-redux';
 
 class Home extends Component {
+    
   constructor(props) {
     super(props);
     const { dispatch } = this.props;
+    this.message = "";
+    this.size="";
+    this.name="";
+    this.buttonVisibility=true;
     this.actions = bindActionCreators(PreviewActions, dispatch);
   }
+
+
   onDrop(files) {
-    console.log('Received files: ', files);
+   
+  
+    var extention ="";
+    extention= files[0].name.split('.').pop();
+    extention=extention.toLowerCase();
+
+    if(extention=="csv"){
+      this.message="uploaded successfully:";
+      this.size="size:-"+files[0].size+"Bytes";
+      this.name=" name:-"+files[0].name;
+      this.buttonVisibility=false;
+      console.log(this.size+" "+this.name);
+    }
+    else{
+      
+      this.message="please select csv file";
+      this.size="";
+      this.name="";
+      this.buttonVisibility=true;
+    }
+    this.setState({});
     var formData = new FormData();
     formData.append('file', files);
     console.log('==formData==', formData);
@@ -24,22 +51,39 @@ class Home extends Component {
     }).then(function success(data) {
         console.log('---------------');
       }).error(function failure(error) {
-        console.log('gdgjkdfgkd');
+        console.log(error);
       });
   }
   render() {
+
+  
     const { increment, incrementIfOdd, incrementAsync, decrement, counter } = this.props;
     return (
       <div>
 	    <div className="container">  
-	      <Dropzone onDrop={this.onDrop}>
-	        <div>Try dropping some files here, or click to select files to upload.</div>
+	      <Dropzone onDrop={this.onDrop.bind(this)}>
+	        <div>
+             Drop File here
+          </div>
+
 	      </Dropzone>
+         <div><b>{this.message}</b>{this.size}{this.name}
+      
+         </div>
+         <div>
+
+         <a className="btn btn-wizard" href="/preview" >
+          <button className="btn btn-primary" disabled={this.buttonVisibility}>Next</button>
+          </a>
+         
+         </div>
+        
 	    </div>
 	  </div>
     );
   }
 }
+
 
 function mapStateToProps(state) {
   const { attributesectionsearch } = state;
